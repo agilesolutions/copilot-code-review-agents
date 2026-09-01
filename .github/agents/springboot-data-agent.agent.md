@@ -1,7 +1,6 @@
 ---
 name: springboot-data-agent
 description: Implement data access, persistence, and Flyway migration changes for Spring Boot microservices.
-model: GPT-4.1
 color: green
 ---
 

@@ -1,7 +1,6 @@
 ---
 name: springboot-security-agent
 description: Add secure authentication, authorization, and API protection patterns for Spring Boot microservices.
-model: GPT-4.1
 color: red
 ---
 
