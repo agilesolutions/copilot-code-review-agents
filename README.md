@@ -1341,3 +1341,11 @@ print("done")
 print("README generated successfully")
 print(path)
 print("END")
+
+# Readings
+
+- [copilot agent templates](https://github.com/github/awesome-copilot/tree/main/agents)
+- [copilot cookbook](https://github.com/github/awesome-copilot/tree/main/cookbook)
+- [copilot documents](https://github.com/github/awesome-copilot/tree/main/docs)
+- [Github Copilot | Build Spring Boot Microservice in Java](https://www.youtube.com/watch?v=-30om8x6ocQ)
+- [GitHub Copilot for IntelliJ IDEA: Complete Tutorial](https://www.youtube.com/watch?v=yP1Hi_uWLQw&t=1626s)
