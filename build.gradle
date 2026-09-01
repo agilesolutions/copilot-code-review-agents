@@ -1,7 +1,8 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '4.1.1'
-	id 'io.spring.dependency-management' version '1.1.7'
+	// plugin versions will be provided by pluginManagement resolutionStrategy (based on gradle/libs.versions.toml)
+	id 'org.springframework.boot'
+	id 'io.spring.dependency-management'
 }
 
 group = 'com.example'
@@ -17,21 +18,34 @@ repositories {
 	mavenCentral()
 }
 
-dependencies {
-	testImplementation platform('org.testcontainers:testcontainers-bom:1.19.0')
+// now fully rely on the version catalog `libs` (use catalog accessors, not findLibrary)
 
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-flyway'
-	implementation 'org.flywaydb:flyway-database-postgresql'
-	runtimeOnly 'org.postgresql:postgresql'
-	runtimeOnly 'com.h2database:h2'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.boot:spring-boot-resttestclient'
-	testImplementation 'org.testcontainers:junit-jupiter'
-	testImplementation 'org.testcontainers:postgresql'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+dependencies {
+	// Lombok
+	compileOnly libs.lombok
+	annotationProcessor libs.lombok
+	// springdoc (openapi)
+	implementation libs.springdoc
+	// Testcontainers BOM via catalog
+	testImplementation platform(libs.testcontainersBom)
+
+	// Spring Boot starters and other libs provided by the version catalog
+	implementation libs.springBootWeb
+	implementation libs.springBootDataJpa
+	implementation libs.springBootValidation
+	// flyway starter - use version catalog entry
+	implementation libs.springBootFlyway
+	implementation libs.flywayCore
+	// database drivers
+	runtimeOnly libs.postgresql
+	runtimeOnly libs.h2
+	// tests
+	testImplementation libs.springBootTest
+	testImplementation libs.resttestclient
+	testImplementation libs.testcontainersJunitJupiter
+	testImplementation libs.testcontainersPostgresql
+	testImplementation libs.testcontainers
+	testRuntimeOnly libs.junitPlatformLauncher
 }
 
 tasks.named('test') {
