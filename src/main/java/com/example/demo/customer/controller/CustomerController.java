@@ -40,8 +40,8 @@ public class CustomerController {
     }
 
     @GetMapping
-    public List<CustomerResponse> getAll() {
-        return service.getAllCustomers();
+    public ResponseEntity<List<CustomerResponse>> getAll() {
+        return ResponseEntity.ok(service.getAllCustomers());
     }
 
     @GetMapping("/{id}")
