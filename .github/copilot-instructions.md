@@ -12,3 +12,10 @@
 - When adding persistence, prefer JPA with repository abstractions and migration tooling.
 - Keep secrets, environment-specific values, and connection settings in configuration properties or environment variables.
 - Document public APIs with clear endpoint descriptions and error semantics.
+
+# Java Spring Boot Code Generation Rules
+- **Stack:** Java 25+, Spring Boot 4.x, Spring Data JPA, Lombok (no @Data on entities).
+- **Architecture:** Maintain strict separation of Controller -> Service -> Repository layers.
+- **API Contracts:** Never return JPA Entities from Controllers. Always map to Java `record` objects as DTOs.
+- **Dependency Injection:** Always use constructor injection instead of `@Autowired` field injection.
+- **Validation:** Always use `jakarta.validation.constraints` on inputs and validate via `@Valid` in controllers.
