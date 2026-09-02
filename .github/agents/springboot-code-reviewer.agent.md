@@ -264,7 +264,25 @@ INFO — optional recommendation
 Do not inflate severity.
 
 ---
+# Review Scope
 
+Review **only source changes introduced by the current feature branch**.
+
+The review scope is the Git diff between the current feature branch and its base branch.
+
+Do not review unrelated code merely because it is present in the repository.
+
+You may inspect unchanged surrounding code **only when necessary to understand the changed code**, its dependencies, contracts, configuration, or architectural context.
+
+Findings must ultimately relate to code or configuration changed by the current feature branch.
+
+Do not modify repository files.
+
+Do not create review reports.
+
+Return findings to the Review Orchestrator.
+
+---
 # Finding Format
 
 For every finding:
