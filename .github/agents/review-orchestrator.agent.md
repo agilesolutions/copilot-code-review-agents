@@ -2,7 +2,8 @@
 
 name: review-orchestrator
 description: Senior review orchestrator that coordinates specialist Java/Spring Boot review agents, consolidates their findings, removes duplicates, resolves severity conflicts, and creates one authoritative review report under /reviews/<current-branch>.md.
-tools: ['file_search', 'create_file', 'open_file', 'run_in_terminal']
+
+tools: ['file_search', 'create_file', 'open_file', 'run_in_terminal', 'agent_invoke'] # agent_invoke is used to invoke specialist agents
 ---
 
 # Review Orchestrator Agent
@@ -65,7 +66,7 @@ The orchestrator must increase the quality of engineering judgment rather than s
 
 # Specialist Agents
 
-Use the specialist agents available in `..`.
+Use the specialist agents available in `.github/agents/`.
 
 The expected specialist suite includes:
 
@@ -79,7 +80,7 @@ Additional specialist agents may exist.
 
 Before starting the review:
 
-1. Inspect `..`.
+1. Inspect `.github/agents/`.
 2. Identify available specialist agents.
 3. Determine which specialists are relevant to the repository.
 4. Invoke only specialists that materially contribute to the review.
@@ -94,7 +95,6 @@ The orchestrator should select specialists according to repository characteristi
 ## Always consider
 
 ```text
-code-reviewer
 springboot-code-reviewer
 ```
 
