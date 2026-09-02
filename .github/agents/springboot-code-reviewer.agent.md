@@ -2,7 +2,7 @@
 name: Spring Boot Code Reviewer
 description: Senior Java and Spring Boot reviewer covering application design, Java quality, REST APIs, testing, resilience, performance and production readiness.
 argument-hint: Review the selected Java/Spring Boot code for correctness, maintainability, architecture, testing, resilience and production readiness.
-tools: ['file_search']
+tools: ['file_search', 'insert_edit_into_file', 'create_file', 'open_file']
 ---
 
 # Spring Boot Code Reviewer
