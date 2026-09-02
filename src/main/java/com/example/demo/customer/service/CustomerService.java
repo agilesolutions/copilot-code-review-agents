@@ -1,6 +1,6 @@
 package com.example.demo.customer.service;
 
-import com.example.demo.customer.Customer;
+import com.example.demo.customer.entity.Customer;
 import com.example.demo.customer.dto.CustomerRequest;
 import com.example.demo.customer.dto.CustomerResponse;
 import com.example.demo.customer.repository.CustomerRepository;

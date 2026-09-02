@@ -1,4 +1,4 @@
-package com.example.demo.customer;
+package com.example.demo.customer.entity;
 
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
