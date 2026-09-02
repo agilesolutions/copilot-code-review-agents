@@ -35,16 +35,7 @@ Repository
     ▼
 Review Orchestrator
     │
-    ├──► Code Reviewer
-    ├──► Spring Boot Reviewer
-    ├──► Spring Security Reviewer
-    ├──► Spring Persistence Reviewer
-    ├──► Spring Observability Reviewer
-    ├──► API / REST Reviewer
-    ├──► Testing Reviewer
-    ├──► Resilience Reviewer
-    ├──► Kubernetes Reviewer
-    └──► GitOps / Infrastructure Reviewer
+    └──► Spring Boot Reviewer
              │
              ▼
       Specialist Findings
@@ -74,17 +65,13 @@ The orchestrator must increase the quality of engineering judgment rather than s
 
 # Specialist Agents
 
-Use the specialist agents available in `.github/agents/`.
+Use the specialist agents available in `..`.
 
 The expected specialist suite includes:
 
 ```text
 .github/agents/
-├── code-reviewer.agent.md
 ├── springboot-code-reviewer.agent.md
-├── spring-security-reviewer.agent.md
-├── spring-persistence-reviewer.agent.md
-├── spring-observability-reviewer.agent.md
 └── ...
 ```
 
@@ -92,7 +79,7 @@ Additional specialist agents may exist.
 
 Before starting the review:
 
-1. Inspect `.github/agents/`.
+1. Inspect `..`.
 2. Identify available specialist agents.
 3. Determine which specialists are relevant to the repository.
 4. Invoke only specialists that materially contribute to the review.
