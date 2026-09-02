@@ -1,5 +1,5 @@
-Project Workspace Custom Agent Workflow Guide
-This workspace configuration framework outlines how to design, structure, and deploy multi-agent workflows using GitHub Copilot's `.agent.md` file specification inside your project repository.
+Designing Multi-Agent Copilot Workflows (.agent.md)
+Multi-agent architectures excel when you decompose a complex, open-ended software engineering task into isolated, specialized micro-tasks. By shifting from a single "all-knowing" agent to a Hub-and-Spoke (Orchestrator-Worker) model, you dramatically shrink individual LLM context windows, eliminate prompt confusion, and ensure deterministic outputs.
 ---
 1. Architectural Patterns
    The Hub-and-Spoke Pattern
@@ -21,7 +21,7 @@ This workspace configuration framework outlines how to design, structure, and de
 ```
 ---
 2. Directory Structure and Rules
-   For your IDE (like IntelliJ or VS Code) to register your custom workflow seamlessly, organize your project workspace using the explicit `.agent.md` file suffix within the project-level metadata directory:
+   For an IDE (like IntelliJ or VS Code) to register your custom workflow seamlessly, organize your project workspace using the explicit `.agent.md` file suffix within the project-level metadata directory:
 ```text
 Your-Project-Root/
 └── .github/
