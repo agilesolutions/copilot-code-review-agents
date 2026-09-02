@@ -39,16 +39,12 @@ The agents can be used independently or combined into a broader **architecture a
 * [Architecture Review](#architecture-review)
 * [Agent Output](#agent-output)
 * [Review Principles](#review-principles)
-* [What the Agents Should Not Do](#what-the-agents-should-not-do)
 * [Example Prompts](#example-prompts)
 * [Integration With Solution Architecture](#integration-with-solution-architecture)
 * [Recommended Development Lifecycle](#recommended-development-lifecycle)
 * [Quality Gates](#quality-gates)
 * [Extending the Agent Suite](#extending-the-agent-suite)
 * [Future Specialist Agents](#future-specialist-agents)
-* [Contributing](#contributing)
-* [License](#license)
-
 ---
 
 # Overview
@@ -1267,6 +1263,1241 @@ This produces a much stronger review than simply asking:
 ```text
 Review this controller.
 ```
+
+---
+
+# Example Prompts
+
+This section provides practical example prompts for invoking the specialist code-review agents.
+
+The prompts are intentionally structured around **review intent** rather than simply asking for a generic “code review”. This allows the appropriate specialist to focus on its engineering domain while avoiding unnecessary overlap with the other reviewers.
+
+---
+
+## 1. General Spring Boot Code Review
+
+### Basic Review
+
+```text
+Review this Spring Boot implementation for correctness, maintainability,
+Spring best practices, and production readiness.
+
+Focus on:
+- Java correctness
+- Spring Boot conventions
+- dependency injection
+- REST API design
+- exception handling
+- separation of concerns
+- maintainability
+- testability
+
+Do not review security, persistence internals, or observability unless
+they directly affect the code-quality assessment.
+
+Report findings using:
+CRITICAL / HIGH / MEDIUM / LOW / INFO
+
+For every finding provide:
+- severity
+- location
+- problem
+- why it matters
+- recommended improvement
+```
+
+### Production Readiness
+
+```text
+Review this Spring Boot service as if it is about to be deployed to
+production.
+
+Evaluate:
+- application structure
+- error handling
+- API behaviour
+- concurrency
+- resource management
+- configuration
+- resilience
+- logging
+- testing
+- maintainability
+
+Identify concrete production risks.
+
+Do not invent runtime behaviour that cannot be established from the
+repository.
+
+Finish with:
+APPROVE
+APPROVE WITH COMMENTS
+CHANGES REQUESTED
+BLOCKED
+```
+
+---
+
+# 2. Spring Security Review
+
+### Security-Focused Review
+
+```text
+Perform a security review of this Spring Boot application.
+
+Focus specifically on:
+- authentication
+- authorization
+- Spring Security configuration
+- OAuth2/OIDC
+- JWT validation
+- issuer and audience validation
+- roles and authorities
+- endpoint protection
+- method-level security
+- CORS
+- CSRF
+- security headers
+- actuator exposure
+- secret handling
+- token propagation
+
+Look specifically for:
+- authentication bypass
+- authorization bypass
+- privilege escalation
+- IDOR
+- insecure direct object references
+- token leakage
+- weak JWT validation
+- insecure configuration
+
+Do not report general code-quality findings unless they create
+a security consequence.
+
+Only report vulnerabilities supported by evidence in the repository.
+```
+
+### OAuth2 Client Credentials
+
+```text
+Review the OAuth2 client-credentials implementation.
+
+Verify:
+- token acquisition
+- client authentication
+- token lifecycle
+- scope handling
+- audience validation
+- credential storage
+- token propagation
+- error handling
+- connection configuration
+- accidental credential/token logging
+
+Determine whether the implementation provides secure service-to-service
+authentication.
+
+Clearly distinguish:
+1. confirmed security defects
+2. security risks requiring verification
+3. recommendations
+```
+
+### Authorization Review
+
+```text
+Review the authorization model of this application.
+
+Trace an incoming request from:
+HTTP endpoint
+→ authentication
+→ JWT
+→ authorities/scopes
+→ authorization rules
+→ service layer
+→ resource access
+
+Determine whether a caller can access resources they should not be
+allowed to access.
+
+Pay particular attention to:
+- horizontal privilege escalation
+- vertical privilege escalation
+- IDOR
+- missing ownership checks
+- incorrect authority mapping
+- overly broad roles
+- tenant isolation
+```
+
+---
+
+# 3. Spring Persistence Review
+
+### JPA/Hibernate Review
+
+```text
+Review the persistence layer of this Spring Boot application.
+
+Focus on:
+- JPA entity design
+- relationships
+- fetch strategies
+- cascade configuration
+- orphan removal
+- entity lifecycle
+- dirty checking
+- equals/hashCode
+- identifier design
+- repository usage
+- query design
+
+Look specifically for:
+- N+1 queries
+- accidental eager loading
+- excessive database round trips
+- unbounded queries
+- inefficient joins
+- incorrect entity relationships
+- concurrency problems
+
+Do not report general Java or REST issues unless they directly
+affect persistence behaviour.
+```
+
+### Transaction Review
+
+```text
+Perform a transaction-boundary review.
+
+For every important transactional operation determine:
+
+- where the transaction starts
+- what resources it covers
+- transaction propagation
+- isolation requirements
+- rollback behaviour
+- transaction duration
+- database locking
+- external calls inside transactions
+- concurrency implications
+
+Look specifically for:
+- transactions that are too large
+- transactions that are too small
+- external network calls inside transactions
+- unexpected rollback behaviour
+- lost updates
+- race conditions
+- incorrect isolation assumptions
+
+Explain the reasoning behind every finding.
+```
+
+### Database Performance Review
+
+```text
+Review this application for database performance risks.
+
+Trace the application flow from controller/service through repository
+and JPA/Hibernate into PostgreSQL.
+
+Look for:
+- N+1 queries
+- missing indexes
+- inefficient queries
+- unbounded result sets
+- unnecessary joins
+- excessive round trips
+- inefficient pagination
+- large object graphs
+- locking contention
+- unnecessary transactions
+
+Do not claim that a database query is slow without sufficient evidence.
+Classify assumptions separately from confirmed findings.
+```
+
+### Flyway Review
+
+```text
+Review all Flyway migrations introduced by this change.
+
+Check:
+- migration ordering
+- naming
+- schema compatibility
+- indexes
+- constraints
+- foreign keys
+- rollback implications
+- destructive changes
+- data migration safety
+- locking
+- production deployment impact
+- backward compatibility with the application version
+
+Identify migrations that could cause deployment failures or production
+downtime.
+```
+
+---
+
+# 4. Spring Observability Review
+
+### General Observability Review
+
+```text
+Review the observability implementation of this Spring Boot service.
+
+Focus on:
+- metrics
+- logs
+- traces
+- OpenTelemetry
+- Micrometer
+- trace context propagation
+- structured logging
+- health endpoints
+- readiness
+- liveness
+- alertability
+
+Evaluate whether an operations team could diagnose:
+- request failures
+- latency problems
+- dependency failures
+- database problems
+- downstream service failures
+- capacity problems
+
+Do not simply recommend adding more telemetry.
+
+Identify missing telemetry that prevents meaningful diagnosis.
+```
+
+### OpenTelemetry Review
+
+```text
+Review the OpenTelemetry implementation.
+
+Assume the target architecture is:
+
+Spring Boot
+    ↓
+OpenTelemetry / OTLP
+    ↓
+Grafana Alloy
+    ↓
+Mimir / Tempo / Loki
+    ↓
+Grafana
+
+Verify:
+- trace propagation
+- span creation
+- service naming
+- resource attributes
+- OTLP configuration
+- metrics export
+- trace export
+- log correlation
+- sampling
+- failure handling
+
+Look for telemetry that is missing, duplicated, misleading,
+or excessively expensive.
+```
+
+### Metrics Cardinality Review
+
+```text
+Review all application metrics for cardinality risks.
+
+For every custom metric inspect its labels/tags.
+
+Pay particular attention to labels containing:
+- user IDs
+- request IDs
+- UUIDs
+- URLs
+- arbitrary error messages
+- database identifiers
+- tenant identifiers
+- unbounded business values
+
+Determine whether any metric could create uncontrolled time-series
+growth.
+
+Explain:
+- the problematic label
+- why its cardinality is unbounded
+- the operational consequence
+- a safer alternative
+```
+
+---
+
+# 5. API / REST Review
+
+```text
+Review the REST API design of this Spring Boot service.
+
+Evaluate:
+- resource modelling
+- HTTP methods
+- status codes
+- request validation
+- response contracts
+- error responses
+- pagination
+- filtering
+- sorting
+- idempotency
+- versioning
+- backwards compatibility
+
+Look for APIs that are:
+- ambiguous
+- inconsistent
+- difficult to consume
+- difficult to evolve
+- unsafe under retries
+
+Separate API design recommendations from actual defects.
+```
+
+### API Error Handling
+
+```text
+Review the API error-handling implementation.
+
+Check:
+- exception mapping
+- HTTP status codes
+- validation errors
+- error response consistency
+- correlation IDs
+- sensitive information leakage
+- logging behaviour
+- unexpected exception handling
+
+Determine whether clients can reliably distinguish between:
+- invalid requests
+- authentication failures
+- authorization failures
+- missing resources
+- conflicts
+- dependency failures
+- internal errors
+```
+
+---
+
+# 6. Testing Review
+
+```text
+Review the test strategy for this Spring Boot service.
+
+Evaluate:
+- unit tests
+- integration tests
+- controller tests
+- repository tests
+- Testcontainers
+- security tests
+- contract tests
+- failure scenarios
+- concurrency tests
+
+Identify important behaviours that are currently untested.
+
+Do not optimize for test count.
+
+Prioritize tests based on:
+1. business criticality
+2. failure impact
+3. architectural risk
+4. regression probability
+```
+
+### Testcontainers Review
+
+```text
+Review the Testcontainers-based integration tests.
+
+Check whether the tests realistically validate:
+- PostgreSQL behaviour
+- database migrations
+- transactions
+- persistence
+- Kafka/RabbitMQ integration
+- application configuration
+- network dependencies
+
+Identify cases where mocks could hide production defects.
+
+Also identify cases where integration tests are unnecessarily expensive
+and could be replaced with focused unit tests.
+```
+
+---
+
+# 7. Microservices Architecture Review
+
+```text
+Review this service from a microservices architecture perspective.
+
+Focus on:
+- service boundaries
+- ownership of data
+- synchronous dependencies
+- asynchronous communication
+- coupling
+- API contracts
+- resilience
+- failure isolation
+- distributed transactions
+- service autonomy
+
+Look for:
+- distributed monolith characteristics
+- excessive synchronous dependencies
+- shared database coupling
+- circular dependencies
+- chatty APIs
+- inappropriate service decomposition
+
+Do not redesign the entire system unless the evidence indicates
+that the current architecture creates a significant problem.
+```
+
+---
+
+# 8. Resilience Review
+
+```text
+Review this service for distributed-system resilience.
+
+Analyze interactions with:
+- databases
+- REST services
+- messaging systems
+- authentication providers
+- external APIs
+
+Check:
+- timeouts
+- retries
+- backoff
+- circuit breakers
+- bulkheads
+- rate limiting
+- connection pools
+- failure propagation
+- graceful degradation
+
+For every retry recommendation determine whether the operation
+is idempotent.
+
+Identify failure modes that could cause:
+- retry storms
+- cascading failures
+- thread exhaustion
+- connection exhaustion
+- message duplication
+```
+
+---
+
+# 9. Configuration Review
+
+```text
+Review the application's configuration strategy.
+
+Focus on:
+- application.yaml
+- application.properties
+- environment variables
+- profiles
+- ConfigMaps
+- Secrets
+- external configuration
+- default values
+- configuration validation
+
+Identify:
+- secrets committed to source control
+- unsafe defaults
+- environment-specific configuration leakage
+- missing configuration validation
+- configuration that can cause production failures
+
+Do not classify a missing configuration property as a defect unless
+there is evidence that the application requires it.
+```
+
+---
+
+# 10. Kubernetes Review
+
+```text
+Review the Kubernetes deployment configuration for this Spring Boot
+service.
+
+Focus on:
+- Deployment
+- Service
+- Ingress
+- ConfigMap
+- Secret
+- resource requests/limits
+- probes
+- replicas
+- PodDisruptionBudget
+- topology spread
+- security context
+- NetworkPolicy
+
+Evaluate production resilience and operational safety.
+
+Pay particular attention to:
+- missing readiness probes
+- incorrect liveness probes
+- unrealistic resource settings
+- missing disruption protection
+- unsafe container permissions
+- unrestricted network access
+```
+
+---
+
+# 11. GitOps / FluxCD Review
+
+```text
+Review the FluxCD deployment configuration.
+
+Focus on:
+- HelmRelease
+- HelmRepository
+- Kustomization
+- reconciliation
+- dependencies
+- namespaces
+- secrets
+- configuration
+- upgrade behaviour
+- rollback behaviour
+
+Identify:
+- dependency ordering problems
+- reconciliation loops
+- configuration drift risks
+- unsafe automatic upgrades
+- missing health checks
+- environment coupling
+
+Explain how a failure would appear operationally and how it should
+be diagnosed.
+```
+
+---
+
+# 12. Code + Security Combined Review
+
+Use this when a change contains both application logic and security-sensitive functionality.
+
+```text
+Perform a combined code-quality and security review.
+
+First review the implementation for normal Spring Boot code quality.
+
+Then independently review:
+- authentication
+- authorization
+- input validation
+- sensitive data handling
+- exception handling
+- API exposure
+
+Keep code-quality findings and security findings separate.
+
+Do not duplicate the same finding in both categories.
+
+Security findings take precedence when the same implementation issue
+creates an exploitable vulnerability.
+```
+
+---
+
+# 13. Code + Persistence Combined Review
+
+```text
+Review this change from both application-code and persistence
+perspectives.
+
+Code review should focus on:
+- maintainability
+- correctness
+- separation of concerns
+- Spring idioms
+- testability
+
+Persistence review should focus on:
+- transactions
+- JPA/Hibernate
+- queries
+- database access
+- concurrency
+- Flyway migrations
+
+Keep findings separated by category and avoid duplicate findings.
+```
+
+---
+
+# 14. Full Specialist Review
+
+```text
+Perform a comprehensive review of this change.
+
+Use the following specialist perspectives:
+
+1. Spring Boot Code Quality
+2. Spring Security
+3. Spring Persistence
+4. Spring Observability
+
+Each specialist should only report findings within its domain.
+
+For every finding provide:
+
+- Specialist
+- Severity
+- Location
+- Evidence
+- Problem
+- Impact
+- Recommendation
+- Confidence
+
+Deduplicate findings where multiple specialists identify the same
+underlying problem.
+
+Finish with:
+
+## Critical Findings
+
+## High Findings
+
+## Medium Findings
+
+## Low Findings
+
+## Positive Findings
+
+## Overall Assessment
+
+Do not invent evidence.
+Do not claim tests were executed unless they were actually executed.
+Do not treat recommendations as defects.
+```
+
+---
+
+# 15. Pull Request Review
+
+```text
+Review this pull request rather than the entire repository.
+
+Prioritize:
+1. correctness
+2. security
+3. data integrity
+4. production risk
+5. backwards compatibility
+
+Focus primarily on changed code, but inspect surrounding code when
+necessary to understand the impact.
+
+Do not report unrelated legacy problems unless the pull request
+introduces or materially increases the risk.
+
+Conclude with:
+
+APPROVE
+APPROVE WITH COMMENTS
+CHANGES REQUESTED
+BLOCKED
+```
+
+---
+
+# 16. Architecture-to-Code Review
+
+```text
+Review whether this implementation correctly realizes the intended
+architecture.
+
+Use the architecture documentation, ADRs, C4 diagrams, API contracts,
+and source code where available.
+
+Check for mismatches between:
+- C4 architecture
+- component responsibilities
+- service boundaries
+- API contracts
+- persistence ownership
+- deployment topology
+- implementation
+
+Report architecture deviations separately from implementation defects.
+
+Do not assume that every architecture deviation is automatically a
+defect. Explain the consequence of each deviation.
+```
+
+---
+
+# 17. Regression Review
+
+```text
+Review this change specifically for regression risk.
+
+Determine:
+- what existing behaviour is changed
+- which consumers could be affected
+- whether APIs remain backwards compatible
+- whether database compatibility is maintained
+- whether configuration remains compatible
+- whether existing tests cover the changed behaviour
+
+Focus on unintended consequences rather than style improvements.
+```
+
+---
+
+# 18. Performance Review
+
+```text
+Review this implementation for performance risks.
+
+Consider:
+- CPU usage
+- memory allocation
+- database access
+- network calls
+- serialization
+- concurrency
+- thread pools
+- connection pools
+- caching
+- collection sizes
+- algorithmic complexity
+
+Prioritize findings that can materially affect production behaviour.
+
+Do not recommend optimization without identifying the mechanism that
+could cause a performance problem.
+```
+
+---
+
+# 19. Maintainability Review
+
+```text
+Review this code specifically for long-term maintainability.
+
+Evaluate:
+- cohesion
+- coupling
+- naming
+- complexity
+- duplication
+- abstraction quality
+- dependency direction
+- testability
+- separation of concerns
+
+Do not recommend abstraction merely because duplication exists.
+
+Prefer the simplest design that keeps the code understandable and
+evolvable.
+```
+
+---
+
+# 20. "Find Only Blockers"
+
+Useful when reviewing a release candidate.
+
+```text
+Review this change using a strict production-release gate.
+
+Report ONLY issues that could reasonably justify blocking release.
+
+Consider:
+- security vulnerabilities
+- data corruption
+- transaction integrity
+- serious concurrency problems
+- production outages
+- severe resilience failures
+- backwards compatibility breaks
+- operational blindness
+
+Do not report:
+- style issues
+- minor refactoring
+- optional improvements
+- subjective preferences
+
+For every blocker provide concrete evidence and explain why release
+should be blocked.
+```
+
+---
+
+# 21. "Find Improvements Only"
+
+Useful after all defects have been resolved.
+
+```text
+Review this implementation for improvement opportunities only.
+
+Do not report defects unless they are genuinely correctness,
+security, data-integrity, or production risks.
+
+Focus on:
+- readability
+- maintainability
+- simplification
+- testability
+- API usability
+- operational improvements
+- architectural evolution
+
+Rank recommendations by expected engineering value.
+```
+
+---
+
+# 22. Evidence-First Review
+
+```text
+Perform an evidence-first code review.
+
+For every finding provide:
+
+Evidence:
+What in the repository supports this conclusion?
+
+Reasoning:
+Why does this evidence indicate a problem?
+
+Impact:
+What could happen if the problem remains?
+
+Recommendation:
+What should be changed?
+
+Confidence:
+HIGH / MEDIUM / LOW
+
+If the evidence is insufficient, do not report the issue as a confirmed
+defect. Instead classify it as a question or verification item.
+```
+
+---
+
+# 23. Review a Specific Class
+
+The agents can also be prompted very narrowly.
+
+### N+1 Detection
+
+```text
+Inspect this repository specifically for N+1 database query problems.
+
+Trace:
+controller → service → repository → entity relationships → queries.
+
+Identify every credible N+1 scenario.
+
+For each one explain:
+- triggering operation
+- relationship causing the issue
+- expected query behaviour
+- recommended solution
+
+Do not report unrelated persistence findings.
+```
+
+### Authorization Bypass
+
+```text
+Inspect this application specifically for authorization bypasses.
+
+Trace every externally accessible endpoint through the authorization
+model and determine whether resource ownership and required
+authorities are enforced.
+
+Focus on:
+- missing authorization
+- incorrect role mapping
+- IDOR
+- tenant isolation
+- privilege escalation
+
+Only report findings supported by the implementation.
+```
+
+### Observability Blind Spots
+
+```text
+Inspect this service specifically for operational blind spots.
+
+Assume the service is running in production and an operator receives
+a report saying:
+
+"Requests are failing intermittently."
+
+Determine whether the available:
+- logs
+- metrics
+- traces
+- health checks
+- correlation information
+
+would allow the operator to determine the cause.
+
+Identify missing telemetry that materially prevents diagnosis.
+```
+
+---
+
+# 24. Ask the Reviewer to Explain a Finding
+
+```text
+Explain finding [FINDING-ID] in more detail.
+
+Show:
+1. the relevant code path
+2. the underlying technical mechanism
+3. why the current implementation is problematic
+4. the production consequence
+5. the recommended solution
+6. whether the recommendation is mandatory or optional
+
+Do not introduce unrelated findings.
+```
+
+---
+
+# 25. Ask for a Minimal Fix
+
+```text
+For finding [FINDING-ID], propose the smallest change that resolves
+the identified problem.
+
+Constraints:
+- preserve existing public APIs where possible
+- preserve existing behaviour
+- avoid introducing new frameworks
+- avoid unnecessary refactoring
+- follow existing project conventions
+
+Explain why the proposed change is sufficient.
+```
+
+---
+
+# 26. Ask for Alternatives
+
+```text
+For finding [FINDING-ID], provide up to three possible solutions.
+
+For each solution describe:
+
+- implementation complexity
+- operational impact
+- performance impact
+- maintainability
+- risks
+- advantages
+- disadvantages
+
+Recommend one solution and explain the trade-off.
+
+Do not assume that the most sophisticated solution is automatically
+the best one.
+```
+
+---
+
+# 27. Review After Changes
+
+```text
+Re-review the implementation after the reported findings have been
+addressed.
+
+For each previous finding determine:
+
+- RESOLVED
+- PARTIALLY RESOLVED
+- NOT RESOLVED
+- NO LONGER APPLICABLE
+
+Check whether the fix introduced:
+- regressions
+- new security problems
+- transaction problems
+- performance problems
+- observability gaps
+
+Do not reopen unrelated findings unless the new implementation
+creates a direct connection.
+```
+
+---
+
+# 28. Recommended Prompt Pattern
+
+For repeatable reviews, use the following structure:
+
+```text
+ROLE
+You are reviewing this implementation as a [SPECIALIST].
+
+OBJECTIVE
+Determine whether the implementation satisfies [OBJECTIVE].
+
+SCOPE
+Focus on:
+- ...
+- ...
+- ...
+
+OUT OF SCOPE
+Do not focus on:
+- ...
+- ...
+
+EVIDENCE
+Use only evidence available in:
+- source code
+- configuration
+- tests
+- architecture documentation
+- build configuration
+- deployment manifests
+
+ANALYSIS
+Trace the relevant execution path before reporting findings.
+
+FINDINGS
+For every finding provide:
+- ID
+- severity
+- location
+- evidence
+- problem
+- impact
+- recommendation
+- confidence
+
+RULES
+- Do not invent evidence.
+- Do not claim tests were executed unless they were executed.
+- Do not inflate severity.
+- Do not duplicate findings.
+- Distinguish defects from recommendations.
+- State uncertainty explicitly.
+
+FINAL ASSESSMENT
+Provide the specialist's final assessment.
+```
+
+---
+
+# 29. Prompt Selection Matrix
+
+| Situation                     | Recommended Specialist           |
+| ----------------------------- | -------------------------------- |
+| General Java/Spring quality   | Spring Boot Code Reviewer        |
+| REST API implementation       | Spring Boot Code Reviewer        |
+| OAuth2/OIDC                   | Spring Security Reviewer         |
+| JWT validation                | Spring Security Reviewer         |
+| Authorization                 | Spring Security Reviewer         |
+| JPA/Hibernate                 | Spring Persistence Reviewer      |
+| Transactions                  | Spring Persistence Reviewer      |
+| PostgreSQL performance        | Spring Persistence Reviewer      |
+| Flyway migration              | Spring Persistence Reviewer      |
+| Micrometer                    | Spring Observability Reviewer    |
+| OpenTelemetry                 | Spring Observability Reviewer    |
+| Grafana LGTM                  | Spring Observability Reviewer    |
+| Metric cardinality            | Spring Observability Reviewer    |
+| Kubernetes deployment         | Platform/Kubernetes Reviewer     |
+| FluxCD                        | GitOps Reviewer                  |
+| API compatibility             | Code/API Reviewer                |
+| Distributed-system resilience | Architecture/Resilience Reviewer |
+| Full PR                       | Review Orchestrator              |
+| Release gate                  | Review Orchestrator              |
+| Architecture compliance       | Solution Architect               |
+| C4-to-code consistency        | Solution Architect               |
+
+---
+
+# 30. Recommended Multi-Agent Review
+
+For an important production change, the preferred workflow is:
+
+```text
+                    Pull Request
+                         │
+                         ▼
+                ┌─────────────────┐
+                │ Review           │
+                │ Orchestrator     │
+                └────────┬────────┘
+                         │
+          ┌──────────────┼──────────────┐
+          │              │              │
+          ▼              ▼              ▼
+   ┌────────────┐ ┌────────────┐ ┌────────────┐
+   │ Spring     │ │ Security   │ │ Persistence│
+   │ Code       │ │ Reviewer   │ │ Reviewer   │
+   │ Reviewer   │ │            │ │            │
+   └────────────┘ └────────────┘ └────────────┘
+          │              │              │
+          └──────────────┼──────────────┘
+                         │
+                         ▼
+                ┌─────────────────┐
+                │ Observability   │
+                │ Reviewer        │
+                └────────┬────────┘
+                         │
+                         ▼
+                ┌─────────────────┐
+                │ Deduplicate &   │
+                │ Prioritize      │
+                └────────┬────────┘
+                         │
+                         ▼
+                ┌─────────────────┐
+                │ Human Review    │
+                │ & Decision      │
+                └─────────────────┘
+```
+
+The important principle is that **specialist prompts should narrow the
+reviewer's responsibility rather than encourage every agent to review
+everything**.
+
+This improves finding quality, reduces duplicated findings, and makes
+the resulting review easier for engineers and architects to act upon.
 
 ---
 
