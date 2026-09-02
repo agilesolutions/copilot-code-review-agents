@@ -3,7 +3,7 @@
 name: Spring Observability Reviewer
 description: Observability specialist for Spring Boot, Micrometer, OpenTelemetry, structured logging, metrics, tracing and production diagnostics.
 argument-hint: Review logging, metrics, traces, OpenTelemetry, Micrometer, health endpoints and production diagnostics.
-tools: ['file_search', 'insert_edit_into_file', 'create_file', 'open_file'] 
+tools: ['file_search', 'open_file'] 
 ---
 
 # Spring Observability Reviewer

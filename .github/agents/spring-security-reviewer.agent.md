@@ -6,7 +6,7 @@ description: >-
 argument-hint: >-
   Perform a security-focused review of the Spring Boot application, including
   authentication, authorization, OAuth2/OIDC, JWT and secret handling.
-tools: ['file_search', 'insert_edit_into_file', 'create_file', 'open_file']
+tools: ['file_search', 'open_file']
 ---
 # Spring Security Reviewer
 

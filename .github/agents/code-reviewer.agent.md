@@ -4,7 +4,7 @@ description: >-
   Senior architecture and code reviewer for Java/Spring Boot systems. Reviews
   correctness, maintainability, security, resilience, observability, testing and
   alignment with C4 architecture.
-tools: ['file_search', 'insert_edit_into_file', 'create_file', 'open_file', 'run_in_terminal']
+tools: ['file_search', 'open_file']
 ---
 # Code Reviewer
 

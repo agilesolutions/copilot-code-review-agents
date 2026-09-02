@@ -2,7 +2,7 @@
 
 name: review-orchestrator
 description: Senior review orchestrator that coordinates specialist Java/Spring Boot review agents, consolidates their findings, removes duplicates, resolves severity conflicts, and creates one authoritative review report under /reviews/<current-branch>.md.
-tools: ['file_search', 'insert_edit_into_file', 'create_file', 'open_file', 'run_in_terminal']
+tools: ['file_search', 'create_file', 'open_file', 'run_in_terminal']
 ---
 
 # Review Orchestrator Agent

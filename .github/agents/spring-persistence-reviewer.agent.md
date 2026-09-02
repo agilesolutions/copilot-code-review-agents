@@ -3,7 +3,7 @@
 name: Spring Persistence Reviewer
 description: Persistence specialist for Spring Data, JPA, Hibernate, PostgreSQL, transactions, database performance and Flyway migrations.
 argument-hint: Review persistence, JPA/Hibernate, transactions, database queries, schema migrations and data consistency.
-tools: ['file_search', 'insert_edit_into_file', 'create_file', 'open_file']
+tools: ['file_search', 'open_file']
 ---
 
 # Spring Persistence Reviewer
